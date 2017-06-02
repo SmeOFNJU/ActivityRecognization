@@ -1,0 +1,33 @@
+1 t=xlsread('文件1的路径.xls','dtw','文件1数据区域');
+ 2 r=xlsread('文件2的路径.xls','dtw','文件2数据区域');
+ 3 %计算序列帧数
+ 4 n = size(t,1);
+ 5 m = size(r,1);
+ 6 % 帧匹配距离矩阵
+ 7 d = zeros(n,m);
+ 8 for i = 1:n
+ 9 for j = 1:m
+10 d(i,j) = sum((t(i,:)-r(j,:)).^2);
+11 end
+12 end
+13  % 累积距离矩阵
+14  D = ones(n,m) *realmax;
+15  D(1,1) = d(1,1);
+16  % 动态规划
+17  for i = 2:n
+18  for j = 1:m
+19  D1 = D(i-1,j);
+20  if j>1
+21  D2 = D(i-1,j-1);
+22  else
+23  D2 =realmax;
+24  end
+25  if j>2
+26  D3 = D(i-1,j-2);
+27  else
+28  D3 =realmax;
+29  end
+30  D(i,j) = d(i,j) + min([D1,D2,D3]);
+31  end
+32  end
+33  dist = D(n,m);
